@@ -8,7 +8,7 @@ filename = "subreddit_data3.json"
 
 
 # Function to display search results, subreddit posts, and user data
-def display_data(miner, subreddit_name, limit=search_limit):
+def display_data(miner, subreddit_name, reddit_username, limit=search_limit, time_setting):
     search_results = miner.search_reddit(reddit_search, limit=search_limit)
     display_results(search_results, "SEARCH")
 
@@ -20,18 +20,20 @@ def display_data(miner, subreddit_name, limit=search_limit):
     else:
         print("Failed to scrape post details.")
 
-    # Scrape user data
+# Scrape user data
+def scrape_user_data(reddit_username="", limit=5):
     user_data = miner.scrape_user_data(reddit_username, limit=userdata_limit)
     display_results(user_data, "USER DATA")
 
-    # Scrape top posts from a subreddit
+             
+# Scrape top posts from a subreddit
+def scrape_subreddit_or_user(reddit_username, subredditname, subreddit_or_user="subreddit", limit=5, category="new", time_setting="week"): 
     if subreddit_or_user == "user":
-        subreddit_posts = miner.fetch_subreddit_posts(user_name, limit=limit, category=subreddit_category, time_filter=time_setting)
+        subreddit_posts = miner.fetch_subreddit_posts(reddit_username, limit=limit, category=subreddit_category, time_filter=time_setting)
     else:
         subreddit_posts = miner.fetch_subreddit_posts(subreddit_name, limit=limit, category=subreddit_category, time_filter=time_setting)
-    display_results(subreddit_posts, "SUBREDDIT Top Posts")
-
-    # Attempt to download images from the first few posts
+    display_results(subreddit_posts, "Posts")
+    # Attempt to download images from specified number of posts
     for idx, post in enumerate(subreddit_posts[:dl_images]):
         try:
             image_url = post.get("image_url", post.get("thumbnail_url", ""))
@@ -42,10 +44,10 @@ def display_data(miner, subreddit_name, limit=search_limit):
 
 
 # Function to scrape subreddit post details and comments and save to JSON
-def scrape_subreddit_data(subreddit_name, limit=json_limit, filename=filename):
+def scrape_subreddit_to_json(subreddit_name, limit=5, time_setting="all", subreddit_category="new", filename=filename):
     try:
         subreddit_posts = miner.fetch_subreddit_posts(
-            subreddit_name, limit=limit, category="top", time_filter=time_setting
+            subreddit_name, limit=limit, category=subreddit_category, time_filter=time_setting
         )
 
         # Load existing data from the JSON file, if available
@@ -97,42 +99,54 @@ def save_to_json(data, filename=filename):
         print(f"Error saving data to JSON file: {e}")
 
 
-# Main execution
+# Main execution / Settings
 if __name__ == "__main__":
+
+    #Not sure what all the options are - possibly now, today, week, year, all
+    time_setting ="all"
     
+    #name for the subreddit and/or user we will be working with
+    subreddit_name = "mildlyinfuriating"
+    reddituser_name = "redditor's username"
+    
+    #Do a simple reddit search
     do_search = true
     reddit_search = "heartwarming news"
     search_limit = 5
-    
+
+    #Scrape post details from a reddit permalink
     do_permalink = true
     permalink_name = "https://www.reddit.com/r/OneOrangeBraincell/comments/1g4go9v/this_is_his_face_every_time_i_leave_the_house/"
-    
+
+    #Scrape a subreddit or user for posts
     do_subreddit_or_user = true
-    dl_images = 50
+    #Number of posts to scrape
+    posts limit = 5
+    #Number of images to download from the scrape
+    image_limit = 50
+    #Choose if the scrape is for a user or a subreddit
     subreddit_or_user = "subreddit"
+    #Scrape categories, for subreddit use 'new', 'hot', or 'top' - for user use 'usernew', 'userhot', or 'usertop'
     subreddit_category = "new"
-    subreddit_name = "mildlyinfuriating"
-    
+        
+    #Scrape basic user data / posts limit
     do_userdata = true
-    reddituser_name = "redditor's username"
     userdata_limit = 5
-       
+
+    #scrape subreddit to json file / posts limit
     do_json = true
     json_limit = 5
-    time_setting
-
-
-
-
-
-
-
-
-
-
     
     # Display data for various functionalities
-    display_data(miner, subreddit_name, limit=posts_limit)
+    if 
+    display_data(miner, subreddit_name, reddituser_name, limit=posts_limit, time_setting)
     
     # Scrape and save subreddit post data to JSON
-    scrape_subreddit_data(subreddit_name, limit=json_limit)
+    if do_json:
+        scrape_subreddit_data(subreddit_name, json_limit, time_setting, subreddit_category)
+
+    if do_subreddit_or_user:
+        scrape_subreddit_or_user(reddit_username, subreddit_name, subreddit_or_user, subreddit_category, post_limit, image_limit, time_setting)
+
+    if do_userdata:
+        
